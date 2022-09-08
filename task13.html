@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>local stroage</title>
+</head>
+
+<body>
+  <h1>Appointment Booking app</h1>
+  <form onsubmit="saveToLocalStorage(event)">
+    <label>name</label>
+    <input type="text" id="username" name="username" required />
+    <label>email</label>
+    <input type="text" id="email" name="email" required />
+    <button>submit</button>
+  </form>
+  <ul id="list"></ul>
+  <script>
+    function saveToLocalStorage(event) {
+      event.preventDefault();
+      const name = event.target.username.value
+      const email = event.target.email.value;
+
+      const obj = {
+        name, email
+
+      }
+      localStorage.setItem(obj.email, JSON.stringify(obj))
+      showNewUser(obj)
+
+    }//this is use when the screen refresh then the data collapsed so we use this window.add to fetch the data
+    window.addEventListener("DOMContentLoaded", () => {
+      const localStorageObj = localStorage;
+      const localstoragekeys = Object.keys(localStorageObj)
+
+      for (var i = 0; i < localstoragekeys.length; i++) {
+        const key = localstoragekeys[i]
+        const userDetailsString = localStorageObj[key];
+        const userDetailsObj = JSON.parse(userDetailsString);
+        showNewUser(userDetailsObj)
+      }
+    })
+
+
+    function showNewUser(user) {
+      if (localStorage.getItem(user.email) !== null) {
+        removeUserFromScreen(user.email)
+      }
+      const parent = document.getElementById('list')
+      const child = `<li>name-${user.name} email-${user.email} <button onclick=deleteUser('${user.email}')> Delete User </button>
+          <button onclick=editUserDetails('${user.email}','${user.name}')> Edit User </button></li>`
+
+      parent.innerHTML = parent.innerHTML + child
+
+
+    }
+    function deleteUser(email) {
+      console.log(email)
+      localStorage.removeItem(email);
+      removeUserFromScreen(email);
+
+    }
+    function editUserDetails(email, name) {
+
+      document.getElementById('email').value = email;
+      document.getElementById('username').value = name
+
+      deleteUser(email)
+    }
+    function removeUserFromScreen(email) {
+      const parentNode = document.getElementById('list');
+      const childNodeToBeDeleted = document.getElementById(email);
+      if (childNodeToBeDeleted) {
+        parentNode.removeChild(childNodeToBeDeleted)
+      }
+    }
+
+
+  </script>
+
+</body>
+
+</html>
